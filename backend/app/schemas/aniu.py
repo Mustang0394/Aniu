@@ -27,6 +27,9 @@ class AppSettingsBase(BaseModel):
     automation_enable_auto_compaction: bool = True
     automation_idle_summary_hours: int = Field(default=12, ge=1, le=168)
     llm_enable_reasoning_content_echo: bool = False
+    tg_bot_token: str | None = Field(default=None, max_length=512)
+    tg_chat_id: str | None = Field(default=None, max_length=512)
+    tg_notify_trade_enabled: bool = False
 
 
 class AppSettingsRead(AppSettingsBase):
@@ -40,6 +43,8 @@ class AppSettingsRead(AppSettingsBase):
     def mask_sensitive_fields(self) -> "AppSettingsRead":
         self.mx_api_key = _mask_key(self.mx_api_key)
         self.llm_api_key = _mask_key(self.llm_api_key)
+        self.tg_bot_token = _mask_key(self.tg_bot_token)
+        self.tg_chat_id = _mask_key(self.tg_chat_id)
         return self
 
 

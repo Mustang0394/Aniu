@@ -59,6 +59,9 @@ class AppSettings(Base):
     )
     automation_idle_summary_hours: Mapped[int] = mapped_column(Integer, default=12)
     llm_enable_reasoning_content_echo: Mapped[bool] = mapped_column(Boolean, default=False)
+    tg_bot_token: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    tg_chat_id: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    tg_notify_trade_enabled: Mapped[bool] = mapped_column(Boolean, default=False)
     automation_context_source: Mapped[str | None] = mapped_column(
         String(32), nullable=True, default="default"
     )

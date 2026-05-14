@@ -7,6 +7,9 @@ export interface AppSettings {
   llm_model: string
   automation_context_window_tokens: number | null
   llm_enable_reasoning_content_echo: boolean
+  tg_bot_token: string | null
+  tg_chat_id: string | null
+  tg_notify_trade_enabled: boolean
   system_prompt: string
   created_at: string
   updated_at: string

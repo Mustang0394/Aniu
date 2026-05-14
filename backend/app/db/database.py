@@ -97,6 +97,14 @@ def _ensure_app_settings_columns(engine) -> None:
         statements.append(
             "ALTER TABLE app_settings ADD COLUMN llm_enable_reasoning_content_echo BOOLEAN DEFAULT 0"
         )
+    if "tg_bot_token" not in columns:
+        statements.append("ALTER TABLE app_settings ADD COLUMN tg_bot_token VARCHAR(255)")
+    if "tg_chat_id" not in columns:
+        statements.append("ALTER TABLE app_settings ADD COLUMN tg_chat_id VARCHAR(255)")
+    if "tg_notify_trade_enabled" not in columns:
+        statements.append(
+            "ALTER TABLE app_settings ADD COLUMN tg_notify_trade_enabled BOOLEAN DEFAULT 0"
+        )
 
     if not statements:
         return
@@ -112,7 +120,8 @@ def _ensure_app_settings_columns(engine) -> None:
                 "automation_recent_message_limit = COALESCE(automation_recent_message_limit, 24), "
                 "automation_enable_auto_compaction = COALESCE(automation_enable_auto_compaction, 1), "
                 "automation_idle_summary_hours = COALESCE(automation_idle_summary_hours, 12), "
-                "automation_context_source = COALESCE(NULLIF(trim(automation_context_source), ''), 'default')"
+                "automation_context_source = COALESCE(NULLIF(trim(automation_context_source), ''), 'default'), "
+                "tg_notify_trade_enabled = COALESCE(tg_notify_trade_enabled, 0)"
             )
         )
 

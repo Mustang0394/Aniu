@@ -53,6 +53,31 @@
               <input v-model="settings.mx_api_key" type="password" placeholder="妙想接口 apikey" />
               <p class="field-help">用于访问东方财富妙想接口的密钥。</p>
             </label>
+            <div class="field-toggle-row">
+              <span>交易通知 (Telegram)</span>
+              <button
+                type="button"
+                class="skill-toggle"
+                :class="{ 'is-on': settings.tg_notify_trade_enabled }"
+                role="switch"
+                :aria-checked="settings.tg_notify_trade_enabled"
+                @click="settings.tg_notify_trade_enabled = !settings.tg_notify_trade_enabled"
+              >
+                <span class="skill-toggle-thumb" aria-hidden="true"></span>
+                {{ settings.tg_notify_trade_enabled ? '启用' : '停用' }}
+              </button>
+            </div>
+            <p class="field-help">启用后，交易执行时将向 Telegram 推送通知。</p>
+            <label class="field">
+              <span>Bot Token</span>
+              <input v-model="settings.tg_bot_token" type="password" placeholder="123456:ABC-DEF..." />
+              <p class="field-help">Telegram Bot 的 API Token，从 @BotFather 获取。</p>
+            </label>
+            <label class="field">
+              <span>Chat ID</span>
+              <input v-model="settings.tg_chat_id" type="password" placeholder="-100xxxxxxxxxx" />
+              <p class="field-help">接收通知的 Telegram 聊天 ID，可通过 @userinfobot 查询。</p>
+            </label>
           </div>
           <div class="settings-right">
             <label class="field">

@@ -359,7 +359,7 @@ class AniuService:
 
     def update_settings(self, db: Session, payload: AppSettingsUpdate) -> AppSettings:
         instance = self.get_or_create_settings(db)
-        sensitive_fields = {"mx_api_key", "llm_api_key"}
+        sensitive_fields = {"mx_api_key", "llm_api_key", "tg_bot_token", "tg_chat_id"}
         changed_fields: list[str] = []
         for field, value in payload.model_dump().items():
             if field in sensitive_fields:
@@ -1798,6 +1798,11 @@ class AniuService:
                 "llm_enable_reasoning_content_echo": getattr(
                     settings, "llm_enable_reasoning_content_echo", False
                 ),
+                "tg_bot_token": getattr(settings, "tg_bot_token", None),
+                "tg_chat_id": getattr(settings, "tg_chat_id", None),
+                "tg_notify_trade_enabled": getattr(
+                    settings, "tg_notify_trade_enabled", False
+                ),
             }
         return run_id, settings_snapshot
 
@@ -2022,6 +2027,28 @@ class AniuService:
                     price=action.get("price"),
                     status=action.get("status") or "submitted",
                 )
+
+            # --- Telegram notification for trade orders ---
+            if settings_snapshot.get("tg_notify_trade_enabled") and persisted_trade_orders:
+                from app.services.notification_service import send_telegram_trade_notification
+                try:
+                    send_telegram_trade_notification(
+                        bot_token=settings_snapshot.get("tg_bot_token") or "",
+                        chat_id=settings_snapshot.get("tg_chat_id") or "",
+                        trade_orders=[
+                            action for action in executed_actions
+                            if str(action.get("action") or "") in {"BUY", "SELL"}
+                        ],
+                        run_id=run_id,
+                        trigger_source=trigger_source,
+                        schedule_name=settings_snapshot.get("schedule_name"),
+                    )
+                except Exception:
+                    logger.warning(
+                        "Telegram notification failed for run_id=%s (suppressed)",
+                        run_id,
+                        exc_info=True,
+                    )
 
             if not return_full_run:
                 logger.info(
